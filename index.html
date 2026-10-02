@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>테스트 웹페이지</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #222;
+      transition: 0.3s;
+    }
+
+    body.dark {
+      background: #18181b;
+      color: #f4f4f5;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: 50px auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: .9;
+    }
+
+    .card {
+      margin-top: 25px;
+      padding: 25px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    body.dark .card {
+      background: #27272a;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      border: 0;
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: #6366f1;
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      margin: 4px;
+      transition: .2s;
+    }
+
+    button:hover {
+      background: #4f46e5;
+      transform: translateY(-1px);
+    }
+
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    #count {
+      font-size: 35px;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 15px;
+      background: #eef2ff;
+      color: #3730a3;
+      border-radius: 10px;
+      display: none;
+    }
+
+    body.dark .message {
+      background: #312e81;
+      color: white;
+    }
+
+    .status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      margin: 30px 0;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <header>
+      <h1>🚀 테스트 웹페이지</h1>
+      <p>HTML + CSS + JavaScript 단일 파일 예제</p>
+    </header>
+
+    <div class="card">
+      <h2>📝 입력 테스트</h2>
+
+      <input
+        type="text"
+        id="nameInput"
+        placeholder="이름을 입력하세요"
+      />
+
+      <button onclick="showMessage()">
+        메시지 출력
+      </button>
+
+      <button onclick="toggleDarkMode()">
+        🌙 다크모드
+      </button>
+
+      <div id="message" class="message"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔢 카운터 테스트</h2>
+
+      <div class="counter">
+        <button onclick="changeCount(-1)">−</button>
+
+        <span id="count">0</span>
+
+        <button onclick="changeCount(1)">+</button>
+
+        <button onclick="resetCount()">초기화</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ JavaScript 테스트</h2>
+
+      <button onclick="runTest()">
+        JavaScript 실행
+      </button>
+
+      <div id="status" class="status">
+        대기 중...
+      </div>
+    </div>
+
+    <footer>
+      Single HTML File Test Page
+    </footer>
+
+  </div>
+
+  <script>
+    // 카운터
+    let count = 0;
+
+    function changeCount(value) {
+      count += value;
+      document.getElementById("count").textContent = count;
+    }
+
+    function resetCount() {
+      count = 0;
+      document.getElementById("count").textContent = count;
+    }
+
+    // 입력 테스트
+    function showMessage() {
+      const input = document.getElementById("nameInput");
+      const message = document.getElementById("message");
+
+      const name = input.value.trim();
+
+      if (!name) {
+        message.textContent = "⚠️ 이름을 입력해주세요.";
+      } else {
+        message.textContent = `👋 안녕하세요, ${name}님!`;
+      }
+
+      message.style.display = "block";
+    }
+
+    // 다크모드
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    // JavaScript 실행 테스트
+    function runTest() {
+      const status = document.getElementById("status");
+
+      status.textContent = "✅ JavaScript가 정상적으로 실행되었습니다!";
+      status.style.color = "#16a34a";
+    }
+  </script>
+
+</body>
+</html>
