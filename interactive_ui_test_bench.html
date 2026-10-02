@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive UI Test Suite</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.05);
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(107, 114, 128, 0.8);
+    }
+
+    /* Glassmorphism effects */
+    .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .dark .glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Custom Skeleton pulse */
+    @keyframes skeleton-glow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+    .skeleton-animated {
+      animation: skeleton-glow 1.5s ease-in-out infinite;
+    }
+
+    /* Pulse wave for hero badge */
+    @keyframes badge-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+    .pulse-ring {
+      animation: badge-pulse 2s infinite;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+
+  <header class="sticky top-0 z-40 glass transition-all duration-300 border-b border-slate-200/50 dark:border-slate-800/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="bg-gradient-to-tr from-brand-600 to-indigo-500 text-white p-2.5 rounded-xl shadow-lg shadow-brand-500/30">
+            <i class="fa-solid font-bold fa-vial-circle-check text-xl"></i>
+          </div>
+          <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-brand-600 to-indigo-600 dark:from-brand-500 dark:to-indigo-400 bg-clip-text text-transparent">
+            TestBench <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/60 dark:text-brand-300 align-middle">v2.5</span>
+          </span>
+        </div>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-1 font-medium text-sm text-slate-600 dark:text-slate-300">
+          <a href="#hero" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Overview</a>
+          <a href="#forms" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Form Controls</a>
+          <a href="#counter" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Widgets</a>
+          <a href="#todo" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Task App</a>
+          <a href="#api" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Async API</a>
+          <a href="#chart" class="px-3 py-2 rounded-lg hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Visualizer</a>
+        </nav>
+
+        <!-- Right Action items -->
+        <div class="flex items-center gap-3">
+          <!-- Dark Mode Toggle Button -->
+          <button id="themeToggleBtn" aria-label="Toggle theme" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:ring-2 hover:ring-brand-500 transition duration-200">
+            <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+          </button>
+
+          <!-- Action Button -->
+          <button onclick="openModal()" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-md shadow-brand-500/20 active:scale-95 transition">
+            <i class="fa-solid fa-bell"></i>
+            <span>Trigger Dialog</span>
+          </button>
+
+          <!-- Mobile menu btn -->
+          <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-4 py-3 space-y-1 shadow-lg">
+      <a href="#hero" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Overview</a>
+      <a href="#forms" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Form Controls</a>
+      <a href="#counter" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Widgets & Math</a>
+      <a href="#todo" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Task Manager</a>
+      <a href="#api" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Async API Test</a>
+      <a href="#chart" class="mobile-link block px-3 py-2 rounded-md font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800">Canvas Chart</a>
+    </div>
+  </header>
+
+  <main class="flex-grow space-y-16 py-8">
+
+    <section id="hero" class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8">
+      <div class="relative rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-8 sm:p-12 overflow-hidden shadow-2xl border border-slate-800">
+        <!-- Background decorative graphic -->
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-300 text-xs font-semibold uppercase tracking-wider pulse-ring">
+            <span class="w-2 h-2 rounded-full bg-brand-400 animate-ping"></span>
+            UI/UX Interactive Test Environment
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+            Web Component & Interaction <span class="bg-gradient-to-r from-brand-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Test Suite</span>
+          </h1>
+
+          <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+            All-in-one standalone single-page application built to test responsiveness, state management, form inputs, dynamic filtering, asynchronous data loading, and canvas visualization.
+          </p>
+
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#forms" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold shadow-lg shadow-brand-600/30 active:scale-95 transition">
+              Explore Controls <i class="fa-solid fa-arrow-down ml-2 text-xs"></i>
+            </a>
+            <button onclick="openModal()" class="px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold backdrop-blur-md active:scale-95 transition">
+              Test Modal Popup
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="forms" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-brand-500"></i> Form Controls & UI Elements
+        </h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Interactive input elements with instant state preview and validation testing.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Input Controls Box -->
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Text Input -->
+            <div>
+              <label for="sampleText" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Text Input</label>
+              <input type="text" id="sampleText" placeholder="Type something..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+            </div>
+
+            <!-- Select Dropdown -->
+            <div>
+              <label for="sampleSelect" class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Category Select</label>
+              <select id="sampleSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                <option value="Frontend">Frontend Development</option>
+                <option value="Backend">Backend Services</option>
+                <option value="Database">Database Management</option>
+                <option value="DevOps">DevOps & Cloud</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Range Slider -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="sampleRange" class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Range Slider</label>
+              <span id="rangeValue" class="text-sm font-bold text-brand-600 dark:text-brand-400">50%</span>
+            </div>
+            <input type="range" id="sampleRange" min="0" max="100" value="50" class="w-full accent-brand-600 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer">
+          </div>
+
+          <!-- Toggles, Checkboxes, Radios -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <!-- Switch Toggle -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50">
+              <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Notifications</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="toggleSwitch" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+              </label>
+            </div>
+
+            <!-- Checkbox -->
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50">
+              <input type="checkbox" id="sampleCheck" class="w-4 h-4 text-brand-600 bg-slate-100 border-slate-300 rounded focus:ring-brand-500 dark:bg-slate-700 dark:border-slate-600" checked>
+              <label for="sampleCheck" class="text-sm font-medium text-slate-700 dark:text-slate-300 select-none">Subscribe</label>
+            </div>
+
+            <!-- Radio Option -->
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/50">
+              <input type="radio" id="sampleRadio1" name="mode" class="w-4 h-4 text-brand-600 focus:ring-brand-500" checked>
+              <label for="sampleRadio1" class="text-sm font-medium text-slate-700 dark:text-slate-300 select-none">Active Mode</label>
+            </div>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Drag & Drop File Upload</label>
+            <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-brand-500 dark:hover:border-brand-400 rounded-2xl p-6 text-center cursor-pointer transition bg-slate-50/50 dark:bg-slate-900/30">
+              <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-500 mb-2"></i>
+              <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Click to upload or drag & drop files here</p>
+              <p id="fileDetails" class="text-xs text-slate-400 mt-1">PNG, JPG, PDF up to 10MB</p>
+              <input type="file" id="fileInput" class="hidden">
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Form State Output Panel -->
+        <div class="bg-slate-900 text-slate-100 rounded-2xl p-6 shadow-md border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+              <h3 class="font-bold text-sm uppercase tracking-wider text-brand-400 flex items-center gap-2">
+                <i class="fa-solid fa-code"></i> Live Form State
+              </h3>
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+
+            <pre id="statePreview" class="text-xs font-mono text-emerald-400 bg-slate-950 p-4 rounded-xl overflow-x-auto border border-slate-800 leading-relaxed min-h-[220px]">
+{
+  "text": "",
+  "category": "Frontend",
+  "range": 50,
+  "notifications": true,
+  "subscribed": true,
+  "fileName": "None"
+}
+            </pre>
+          </div>
+
+          <button onclick="resetFormState()" class="mt-4 w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold tracking-wider uppercase text-slate-300 transition border border-slate-700">
+            Reset Form Inputs
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="counter" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Interactive Counter Widget -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+            <i class="fa-solid fa-calculator text-brand-500"></i> Interactive Counter
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Stateful counter component with dynamic scaling visuals.</p>
+
+          <div class="text-center py-6 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/40 mb-6">
+            <span id="counterValue" class="text-6xl font-black text-brand-600 dark:text-brand-400 inline-block transition-transform duration-150">0</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-3">
+            <button onclick="updateCounter(-10)" class="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold text-slate-700 dark:text-slate-200 transition text-sm">-10</button>
+            <button onclick="updateCounter(-1)" class="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold text-slate-700 dark:text-slate-200 transition text-sm">-1</button>
+            <button onclick="updateCounter(1)" class="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold text-slate-700 dark:text-slate-200 transition text-sm">+1</button>
+            <button onclick="updateCounter(10)" class="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 font-semibold text-slate-700 dark:text-slate-200 transition text-sm">+10</button>
+          </div>
+
+          <button onclick="resetCounter()" class="mt-3 w-full py-2 rounded-xl border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700/50 text-xs font-semibold text-slate-500 dark:text-slate-400 transition">
+            Reset Counter
+          </button>
+        </div>
+
+        <!-- Random Generator / Utilities Widget -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-dice text-indigo-500"></i> Utility Generator
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Generate random hex colors, numbers, and UUID tokens on demand.</p>
+
+            <div class="space-y-4">
+              <!-- Random Color Display -->
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/40">
+                <div class="flex items-center gap-3">
+                  <div id="colorBox" class="w-8 h-8 rounded-lg shadow-inner transition-colors duration-300 bg-brand-500"></div>
+                  <span id="colorHex" class="font-mono text-sm font-semibold text-slate-700 dark:text-slate-200">#3B82F6</span>
+                </div>
+                <button onclick="generateRandomColor()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-medium transition">New Color</button>
+              </div>
+
+              <!-- Random UUID -->
+              <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-700/40">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-xs font-semibold uppercase text-slate-400">Generated UUID</span>
+                  <button onclick="generateUUID()" class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-medium">Generate</button>
+                </div>
+                <div id="uuidResult" class="font-mono text-xs text-slate-600 dark:text-slate-300 truncate">a1b2c3d4-e5f6-7890-abcd-ef1234567890</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <button onclick="copyUUID()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold tracking-wider uppercase shadow-md transition active:scale-95">
+              <i class="fa-regular fa-copy mr-1"></i> Copy UUID to Clipboard
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="todo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-700/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-brand-500"></i> Dynamic Task Manager
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Interactive list CRUD operations with filtering and completion states.</p>
+          </div>
+
+          <!-- Filter buttons -->
+          <div class="flex rounded-xl bg-slate-100 dark:bg-slate-900 p-1 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+            <button onclick="filterTasks('all')" id="filterAll" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm text-brand-600 dark:text-brand-400 transition">All</button>
+            <button onclick="filterTasks('active')" id="filterActive" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition">Active</button>
+            <button onclick="filterTasks('completed')" id="filterCompleted" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition">Completed</button>
+          </div>
+        </div>
+
+        <!-- Add Task Input -->
+        <form id="todoForm" class="flex gap-2 mb-6">
+          <input type="text" id="todoInput" placeholder="Add a new task..." required class="flex-grow px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none transition text-sm">
+          <button type="submit" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-md transition active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i>
+            <span class="hidden sm:inline">Add Task</span>
+          </button>
+        </form>
+
+        <!-- Task List Container -->
+        <ul id="taskList" class="space-y-2 mb-4 max-h-80 overflow-y-auto pr-1">
+          <!-- Tasks injected via JS -->
+        </ul>
+
+        <!-- Task List Footer Info -->
+        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/50 pt-4">
+          <span id="taskCount">0 tasks remaining</span>
+          <button onclick="clearCompletedTasks()" class="hover:text-red-500 transition">Clear Completed</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="api" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-700/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-down text-indigo-500"></i> Async Data & Skeleton Loader Test
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Simulate dynamic API calls, network latency, and UI loading states.</p>
+          </div>
+
+          <button id="fetchApiBtn" onclick="fetchSimulatedData()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md active:scale-95 transition flex items-center gap-2">
+            <i class="fa-solid fa-arrows-rotate"></i>
+            <span>Fetch Simulated Data</span>
+          </button>
+        </div>
+
+        <!-- Cards Container -->
+        <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Default message / initial skeletons -->
+        </div>
+      </div>
+    </section>
+
+    <section id="chart" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-700/60">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-emerald-500"></i> Canvas Data Visualizer
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm">Interactive HTML5 Canvas custom rendering chart with dynamic dataset animation.</p>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="randomizeChartData()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-xs font-semibold text-slate-700 dark:text-slate-200 transition">
+              <i class="fa-solid fa-shuffle mr-1"></i> Randomize Data
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="w-full h-72 relative bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700/50 p-4 flex items-center justify-center">
+          <canvas id="customCanvasChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modalOverlay" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-700 transform transition-all scale-95 opacity-0 duration-200" id="modalBox">
+      <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400 rounded-2xl">
+            <i class="fa-solid fa-circle-check text-xl"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interactive Modal</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+      </div>
+
+      <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-6">
+        This modal dialog tests overlay interactions, backdrop blur filters, ESC key detection, and state accessibility triggers.
+      </p>
+
+      <div class="flex gap-3">
+        <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+          Dismiss
+        </button>
+        <button onclick="alert('Action confirmed!')" class="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold shadow-md transition">
+          Confirm Action
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Alert -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-10 opacity-0 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-800">
+    <i class="fa-solid fa-circle-info text-brand-400"></i>
+    <span id="toastMessage" class="text-xs font-medium">Notification message</span>
+  </div>
+
+  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-flask text-brand-500"></i>
+        <span>Single-File Web Test Bench &copy; 2026. All interactions ready.</span>
+      </div>
+      <div class="flex gap-4">
+        <a href="#hero" class="hover:underline">Back to top</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       1. Theme Switcher (Dark / Light Mode)
+       ========================================================================== */
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function initTheme() {
+      if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        document.documentElement.classList.remove('dark');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+      }
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+        showToast('Switched to Light Mode');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+        showToast('Switched to Dark Mode');
+      }
+      drawCanvasChart(); // Redraw canvas to update color theme
+    });
+
+    /* Mobile menu drawer toggle */
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    });
+
+    /* ==========================================================================
+       2. Form Inputs & State Synchronization
+       ========================================================================== */
+    const sampleText = document.getElementById('sampleText');
+    const sampleSelect = document.getElementById('sampleSelect');
+    const sampleRange = document.getElementById('sampleRange');
+    const rangeValue = document.getElementById('rangeValue');
+    const toggleSwitch = document.getElementById('toggleSwitch');
+    const sampleCheck = document.getElementById('sampleCheck');
+    const statePreview = document.getElementById('statePreview');
+    let uploadedFileName = "None";
+
+    function updateFormPreview() {
+      const state = {
+        text: sampleText.value,
+        category: sampleSelect.value,
+        rangeValue: sampleRange.value + '%',
+        notifications: toggleSwitch.checked,
+        subscribed: sampleCheck.checked,
+        fileName: uploadedFileName
+      };
+      statePreview.textContent = JSON.stringify(state, null, 2);
+    }
+
+    sampleText.addEventListener('input', updateFormPreview);
+    sampleSelect.addEventListener('change', updateFormPreview);
+    toggleSwitch.addEventListener('change', updateFormPreview);
+    sampleCheck.addEventListener('change', updateFormPreview);
+
+    sampleRange.addEventListener('input', (e) => {
+      rangeValue.textContent = e.target.value + '%';
+      updateFormPreview();
+    });
+
+    function resetFormState() {
+      sampleText.value = '';
+      sampleSelect.selectedIndex = 0;
+      sampleRange.value = 50;
+      rangeValue.textContent = '50%';
+      toggleSwitch.checked = true;
+      sampleCheck.checked = true;
+      uploadedFileName = "None";
+      document.getElementById('fileDetails').textContent = "PNG, JPG, PDF up to 10MB";
+      updateFormPreview();
+      showToast('Form controls reset');
+    }
+
+    /* File Drag and Drop logic */
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-brand-500', 'bg-brand-50/20');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-brand-500', 'bg-brand-50/20');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-brand-500', 'bg-brand-50/20');
+      if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      uploadedFileName = file.name;
+      document.getElementById('fileDetails').textContent = `Uploaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      updateFormPreview();
+      showToast(`Selected file: ${file.name}`);
+    }
+
+    /* ==========================================================================
+       3. Interactive Counter Widget
+       ========================================================================== */
+    let count = 0;
+    const counterValueEl = document.getElementById('counterValue');
+
+    function updateCounter(val) {
+      count += val;
+      counterValueEl.textContent = count;
+      counterValueEl.classList.add('scale-125');
+      setTimeout(() => counterValueEl.classList.remove('scale-125'), 150);
+    }
+
+    function resetCounter() {
+      count = 0;
+      counterValueEl.textContent = count;
+      showToast('Counter reset to 0');
+    }
+
+    /* ==========================================================================
+       4. Utilities (Random Color, UUID, Toast)
+       ========================================================================== */
+    function generateRandomColor() {
+      const hex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase();
+      document.getElementById('colorBox').style.backgroundColor = hex;
+      document.getElementById('colorHex').textContent = hex;
+    }
+
+    function generateUUID() {
+      const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+      document.getElementById('uuidResult').textContent = uuid;
+    }
+
+    function copyUUID() {
+      const text = document.getElementById('uuidResult').textContent;
+      const tempInput = document.createElement('input');
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showToast('UUID copied to clipboard!');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.remove('hidden', 'translate-y-10', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+      }, 2500);
+    }
+
+    /* ==========================================================================
+       5. Dynamic Task Manager
+       ========================================================================== */
+    let tasks = [
+      { id: 1, text: 'Review UI design responsiveness', completed: true },
+      { id: 2, text: 'Test dark mode variables', completed: false },
+      { id: 3, text: 'Check canvas visualizer animation', completed: false }
+    ];
+    let currentFilter = 'all';
+
+    const todoForm = document.getElementById('todoForm');
+    const todoInput = document.getElementById('todoInput');
+    const taskList = document.getElementById('taskList');
+    const taskCount = document.getElementById('taskCount');
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      const filtered = tasks.filter(t => {
+        if (currentFilter === 'active') return !t.completed;
+        if (currentFilter === 'completed') return t.completed;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        taskList.innerHTML = `<li class="text-center py-6 text-xs text-slate-400">No tasks found in this view.</li>`;
+      } else {
+        filtered.forEach(task => {
+          const li = document.createElement('li');
+          li.className = `flex items-center justify-between p-3 rounded-xl border transition ${
+            task.completed 
+              ? 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-400 line-through' 
+              : 'bg-slate-50/80 dark:bg-slate-900 border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200'
+          }`;
+          li.innerHTML = `
+            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="toggleTask(${task.id})">
+              <input type="checkbox" ${task.completed ? 'checked' : ''} class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 pointer-events-none">
+              <span class="text-sm font-medium">${escapeHtml(task.text)}</span>
+            </div>
+            <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-red-500 p-1 transition">
+              <i class="fa-solid fa-trash-can text-sm"></i>
+            </button>
+          `;
+          taskList.appendChild(li);
+        });
+      }
+
+      const activeCount = tasks.filter(t => !t.completed).length;
+      taskCount.textContent = `${activeCount} task${activeCount === 1 ? '' : 's'} remaining`;
+    }
+
+    todoForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = todoInput.value.trim();
+      if (val) {
+        tasks.unshift({ id: Date.now(), text: val, completed: false });
+        todoInput.value = '';
+        renderTasks();
+        showToast('New task added');
+      }
+    });
+
+    function toggleTask(id) {
+      tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      renderTasks();
+      showToast('Task removed');
+    }
+
+    function filterTasks(type) {
+      currentFilter = type;
+      ['filterAll', 'filterActive', 'filterCompleted'].forEach(id => {
+        const btn = document.getElementById(id);
+        btn.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition";
+      });
+      const activeBtn = document.getElementById(`filter${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      activeBtn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 shadow-sm text-brand-600 dark:text-brand-400 font-semibold transition";
+      renderTasks();
+    }
+
+    function clearCompletedTasks() {
+      tasks = tasks.filter(t => !t.completed);
+      renderTasks();
+      showToast('Completed tasks cleared');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    /* ==========================================================================
+       6. Asynchronous API Data Fetching Simulation
+       ========================================================================== */
+    const cardsGrid = document.getElementById('cardsGrid');
+    const fetchApiBtn = document.getElementById('fetchApiBtn');
+
+    function renderSkeletons() {
+      cardsGrid.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const skel = document.createElement('div');
+        skel.className = 'p-5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4 skeleton-animated';
+        skel.innerHTML = `
+          <div class="h-4 bg-slate-300 dark:bg-slate-700 rounded w-1/3"></div>
+          <div class="h-6 bg-slate-300 dark:bg-slate-700 rounded w-2/3"></div>
+          <div class="space-y-2 pt-2">
+            <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+            <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-4/5"></div>
+          </div>
+        `;
+        cardsGrid.appendChild(skel);
+      }
+    }
+
+    async function fetchSimulatedData() {
+      fetchApiBtn.disabled = true;
+      fetchApiBtn.classList.add('opacity-75');
+      renderSkeletons();
+
+      // Simulated network delay
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      const mockData = [
+        { id: 1, title: 'Server Infrastructure', status: 'Optimal', load: '32%', icon: 'fa-server', color: 'text-emerald-500' },
+        { id: 2, title: 'Database Replication', status: 'Syncing', load: '78%', icon: 'fa-database', color: 'text-amber-500' },
+        { id: 3, title: 'API Gateway Response', status: 'Healthy', load: '14ms', icon: 'fa-network-wired', color: 'text-brand-500' }
+      ];
+
+      cardsGrid.innerHTML = '';
+      mockData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700/60 shadow-sm hover:shadow-md transition';
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <i class="fa-solid ${item.icon} text-xl ${item.color}"></i>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${item.status}</span>
+          </div>
+          <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base mb-1">${item.title}</h4>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Current load metric: <span class="font-semibold text-slate-700 dark:text-slate-200">${item.load}</span></p>
+        `;
+        cardsGrid.appendChild(card);
+      });
+
+      fetchApiBtn.disabled = false;
+      fetchApiBtn.classList.remove('opacity-75');
+      showToast('Simulated data refreshed');
+    }
+
+    /* ==========================================================================
+       7. Canvas Visualizer Component
+       ========================================================================== */
+    const canvas = document.getElementById('customCanvasChart');
+    const ctx = canvas.getContext('2d');
+    let chartValues = [45, 80, 55, 95, 70, 60, 85];
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      drawCanvasChart();
+    }
+
+    function drawCanvasChart() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const padding = 30;
+      const width = canvas.width - padding * 2;
+      const height = canvas.height - padding * 2;
+      const barWidth = width / chartValues.length - 12;
+
+      const isDark = document.documentElement.classList.contains('dark');
+
+      chartValues.forEach((val, i) => {
+        const barHeight = (val / 100) * height;
+        const x = padding + i * (barWidth + 12) + 6;
+        const y = canvas.height - padding - barHeight;
+
+        // Gradient for bars
+        const gradient = ctx.createLinearGradient(0, y, 0, canvas.height - padding);
+        gradient.addColorStop(0, '#3B82F6');
+        gradient.addColorStop(1, '#6366F1');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(x, y, barWidth, barHeight, [6, 6, 0, 0]);
+        } else {
+          ctx.rect(x, y, barWidth, barHeight);
+        }
+        ctx.fill();
+
+        // Draw Value Label
+        ctx.fillStyle = isDark ? '#94A3B8' : '#64748B';
+        ctx.font = '10px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${val}%`, x + barWidth / 2, y - 8);
+      });
+    }
+
+    function randomizeChartData() {
+      chartValues = chartValues.map(() => Math.floor(Math.random() * 65) + 30);
+      drawCanvasChart();
+      showToast('Chart dataset updated');
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    /* ==========================================================================
+       8. Modal Controls
+       ========================================================================== */
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalBox = document.getElementById('modalBox');
+
+    function openModal() {
+      modalOverlay.classList.remove('hidden');
+      setTimeout(() => {
+        modalBox.classList.remove('scale-95', 'opacity-0');
+        modalBox.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeModal() {
+      modalBox.classList.remove('scale-100', 'opacity-100');
+      modalBox.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modalOverlay.classList.add('hidden');
+      }, 200);
+    }
+
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    /* ==========================================================================
+       Initialization
+       ========================================================================== */
+    window.onload = function() {
+      initTheme();
+      updateFormPreview();
+      renderTasks();
+      fetchSimulatedData();
+      setTimeout(resizeCanvas, 100);
+    };
+  </script>
+</body>
+</html>
